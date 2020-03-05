@@ -183,36 +183,44 @@ void PlayScene::m_buildGrid()
 				glm::vec2(col, row));
 			addChild(tile);
 			tile->setTileState(UNVISITED);
+					
+			m_randomizeTileCosts();
 			
-			// determine the type of tile it should be
-			int tileType = rand() % 10;
-			
-			switch (tileType)
-			{
-			case 0:
-			case 1:
-			case 2:
-				tile->setTileCost(1.0f);
-				break;
-			case 3:
-			case 4:
-			case 5:
-				tile->setTileCost(2.0f);
-				break;
-			case 6:
-			case 7:
-				tile->setTileCost(2.5f);
-				break;
-			case 8:
-				tile->setTileCost(3.0f);
-				break;
-			case 9:
-				tile->setTileCost(4.0f);
-				break;
-			}
-
 			// add the tile to the vector
 			m_pGrid.push_back(tile);
+		}
+	}
+}
+
+void PlayScene::m_randomizeTileCosts()
+{
+	for (Tile* tile : m_pGrid)
+	{
+		// determine the type of tile it should be
+		int tileType = rand() % 10;
+
+		switch (tileType)
+		{
+		case 0:
+		case 1:
+		case 2:
+			tile->setTileCost(1.0f);
+			break;
+		case 3:
+		case 4:
+		case 5:
+			tile->setTileCost(2.0f);
+			break;
+		case 6:
+		case 7:
+			tile->setTileCost(2.5f);
+			break;
+		case 8:
+			tile->setTileCost(3.0f);
+			break;
+		case 9:
+			tile->setTileCost(4.0f);
+			break;
 		}
 	}
 }
@@ -561,6 +569,13 @@ void PlayScene::m_updateUI()
 		m_spawnEnemies();
 	}
 
+	if (ImGui::Button("Randomize Tile Costs [r]"))
+	{
+		m_randomizeTileCosts();
+	}
+
+	ImGui::SameLine();
+
 	if (ImGui::Button("Find Shortest Path [f]"))
 	{
 		m_findShortestPath(m_pShip);
@@ -896,7 +911,8 @@ void PlayScene::handleEvents()
 				m_spawnPlanet();
 				break;
 			case SDLK_r:
-				m_resetAll();
+				m_randomizeTileCosts();
+				//m_resetAll();
 				break;
 			case SDLK_s:
 				m_spawnShip();
