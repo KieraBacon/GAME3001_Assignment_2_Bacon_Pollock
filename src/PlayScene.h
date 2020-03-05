@@ -59,6 +59,7 @@ private:
 
 	void m_resetGrid();
 	void m_buildGrid();
+	void m_randomizeTileCosts();
 	void m_mapTiles();
 
 	int m_spawnObject(PathFindingDisplayObject* object);

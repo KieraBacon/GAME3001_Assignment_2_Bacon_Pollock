@@ -86,7 +86,7 @@ void Tile::drawFrame()
 	const int rW = totalCost * 10 > 255 ? 255 : totalCost * 10;
 	const int gW = (2.5 / totalCost) * 10 > 255 ? 255 : (25 / totalCost) * 10;
 	SDL_SetRenderDrawBlendMode(TheGame::Instance()->getRenderer(), SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(TheGame::Instance()->getRenderer(), rB, gB, 0, 16);
+	SDL_SetRenderDrawColor(TheGame::Instance()->getRenderer(), rB, gB, 0, 55);
 	SDL_RenderFillRect(TheGame::Instance()->getRenderer(), &rect);
 	SDL_SetRenderDrawColor(TheGame::Instance()->getRenderer(), rW, gW, 0, 255);
 	SDL_RenderDrawRect(TheGame::Instance()->getRenderer(), &rect);

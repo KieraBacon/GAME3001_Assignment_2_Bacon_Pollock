@@ -8,7 +8,7 @@
 Ship::Ship() :
 	m_maxSpeed(5.0f), m_currentDirection(0.0f), m_turnSpeed(2.0f), m_steerForce(0.1f)
 {
-	TheTextureManager::Instance()->load("../Assets/textures/ship3.png",
+	TheTextureManager::Instance()->load("../Assets/textures/rat2x.png",
 		"ship", TheGame::Instance()->getRenderer());
 
 	auto size = TheTextureManager::Instance()->getTextureSize("ship");

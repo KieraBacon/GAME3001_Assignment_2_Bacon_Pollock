@@ -3,7 +3,7 @@
 
 Planet::Planet()
 {
-	TheTextureManager::Instance()->load("../Assets/textures/planet.png",
+	TheTextureManager::Instance()->load("../Assets/textures/cheese2x.png",
 		"planet", TheGame::Instance()->getRenderer());
 
 	glm::vec2 size = TheTextureManager::Instance()->getTextureSize("planet");
