@@ -3,7 +3,7 @@
 
 Mine::Mine()
 {
-	TheTextureManager::Instance()->load("../Assets/textures/mine.png",
+	TheTextureManager::Instance()->load("../Assets/textures/pylon2x.png",
 		"mine", TheGame::Instance()->getRenderer());
 
 	const auto size = TheTextureManager::Instance()->getTextureSize("mine");

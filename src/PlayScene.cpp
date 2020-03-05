@@ -531,21 +531,21 @@ void PlayScene::m_updateUI()
 	}
 
 	/*************************************************************************************************/
-	if (ImGui::Button("Respawn Ship [s]"))
+	if (ImGui::Button("Respawn Rat [s]"))
 	{
 		m_spawnShip();
 	}
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("Respawn Planet [p]"))
+	if (ImGui::Button("Respawn Cheese [p]"))
 	{
 		m_spawnPlanet();
 	}
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("Respawn Mines [m]"))
+	if (ImGui::Button("Respawn Pylons [m]"))
 	{
 		m_spawnMines();
 	}
