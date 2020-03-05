@@ -694,7 +694,7 @@ bool PlayScene::m_checkLineOfSight(Tile* startingTile, TileNeighbour direction)
 {
 	while (startingTile != nullptr)
 	{
-		std::cout << "TILE FOR LINE OF SIGHT IS: X:::" << startingTile->getGridPosition().x << " Y:::" << startingTile->getGridPosition().y << " AND IS " << startingTile->getTileState() <<  std::endl;
+		std::cout << "TILE FOR LINE OF SIGHT IS: X:::" << startingTile->getGridPosition().x << " Y:::" << startingTile->getGridPosition().y << " AND IS " << startingTile->getState() <<  std::endl;
 		if (startingTile->getTileState() == IMPASSABLE)
 		{
 			return false;
