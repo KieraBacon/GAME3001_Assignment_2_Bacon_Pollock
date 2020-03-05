@@ -20,6 +20,7 @@
 #include "StartScene.h"
 #include "PlayScene.h"
 #include "EndScene.h"
+#include "DefeatScene.h"
 
 #include "Config.h"
 

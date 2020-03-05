@@ -712,6 +712,17 @@ void PlayScene::endTurn()
 		std::cout << "You've reached the planet! Victory!" << std::endl;
 		Game::Instance()->changeSceneState(SceneState::END_SCENE);
 	}
+	else
+	{
+		for (unsigned int i = 0; i < m_enemies.size(); i++)
+		{
+			if (m_enemies[i]->getTile()->getGridPosition() == m_pShip->getTile()->getGridPosition())
+			{
+				std::cout << "You've been hit by an enemy! Defeat!" << std::endl;
+				Game::Instance()->changeSceneState(SceneState::DEFEAT_SCENE);
+			}
+		}
+	}
 
 }
 
