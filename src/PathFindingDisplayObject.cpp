@@ -35,8 +35,10 @@ void PathFindingDisplayObject::moveAlongPath()
 	{
 		while (!m_path.empty() && m_usePts(m_path.back()->getTileCost()) != false)
 		{
+			getTile()->setTileState(UNVISITED);
 			setTile(m_path.back());
 			setPosition(getTile()->getPosition());
+			getTile()->setTileState(CLOSED);
 			m_path.pop_back();
 		}
 	}

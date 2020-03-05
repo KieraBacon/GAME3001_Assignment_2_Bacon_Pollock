@@ -67,6 +67,7 @@ void PlayScene::m_spawnMines()
 
 		if (m_findShortestPath(m_pShip))
 		{
+			m_resetGrid();
 			m_pShip->clearPath();
 			navigable = true; // Try to find a path, if it works, stop trying.
 		}
@@ -128,10 +129,12 @@ void PlayScene::m_buildEnemies()
 
 void PlayScene::m_spawnEnemies()
 {
+	m_resetGrid();
 	for (int i = 0; i < m_enemyNum; ++i)
 	{
 		m_spawnObject(m_enemies[i]);
 		m_enemies[i]->setTargetTile(m_pShip->getTile());
+		m_enemies[i]->getTile()->setTileState(CLOSED);
 	}
 }
 
