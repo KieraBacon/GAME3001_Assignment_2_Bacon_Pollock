@@ -152,12 +152,26 @@ void Game::changeSceneState(const SceneState new_state)
 			m_currentScene = new EndScene();
 			std::cout << "end scene activated" << std::endl;
 			break;
+		case SceneState::DEFEAT_SCENE:
+			m_currentScene = new DefeatScene();
+			std::cout << "defeat scene activated" << std::endl;
+			break;
 		default:
 			std::cout << "default case activated" << std::endl;
 			break;
 		}
 	}
 	
+}
+
+void Game::setScore(float score)
+{
+	m_score = score;
+}
+
+float Game::getScore()
+{
+	return m_score;
 }
 
 void Game::quit()

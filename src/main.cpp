@@ -1,3 +1,5 @@
+// The font used, Kutoen, is freeware downloaded from https://www.fontspace.com/typefar/kutoen. Credit for its creation belongs to Amirudin Mahmud.
+
 // Core Libraries
 #include <crtdbg.h>
 #include <iostream>

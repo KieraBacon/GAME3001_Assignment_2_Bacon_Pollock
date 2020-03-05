@@ -1,15 +1,16 @@
 #pragma once
-#ifndef __END_SCENE__
-#define __END_SCENE__
+#pragma once
+#ifndef __DEFEAT_SCENE__
+#define __DEFEAT_SCENE__
 
 #include "Scene.h"
 #include "Label.h"
 
-class EndScene final : public Scene
+class DefeatScene final : public Scene
 {
 public:
-	EndScene();
-	~EndScene();
+	DefeatScene();
+	~DefeatScene();
 
 	// Inherited via Scene
 	virtual void draw() override;
@@ -24,4 +25,4 @@ private:
 	Label* m_pScoreLabel{};
 };
 
-#endif /* defined (__END_SCENE__) */
+#endif /* defined (__DEFEAT_SCENE__) */

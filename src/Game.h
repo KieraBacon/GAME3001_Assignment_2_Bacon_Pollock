@@ -20,6 +20,7 @@
 #include "StartScene.h"
 #include "PlayScene.h"
 #include "EndScene.h"
+#include "DefeatScene.h"
 
 #include "Config.h"
 
@@ -60,9 +61,10 @@ public:
 	Uint32 getFrames() const;
 
 	void changeSceneState(SceneState new_state);
-	void quit();
-
 	
+	void setScore(float score);
+	float getScore();
+	void quit();
 private:
 	Game();
 	~Game();
@@ -85,6 +87,8 @@ private:
 
 	Scene* m_currentScene;
 	SceneState m_currentSceneState;
+
+	float m_score;
 };
 
 typedef Game TheGame;

@@ -28,11 +28,15 @@ public:
 	virtual void start() override;
 
 	void endTurn();
+	const unsigned int getTurnNum();
 
 private:
 	// GameObjects
 	Ship* m_pShip;
 	Planet* m_pPlanet;
+	Label* m_pTurnLabel{};
+	Label* m_pScoreLabel{};
+	Label* m_pPtsLabel{};
 
 	// Tile & Grid members
 	std::vector<Tile*> m_pGrid;
@@ -68,6 +72,7 @@ private:
 	std::vector<Tile*> m_closedList;
 	Heuristic m_heuristic;
 	void m_selectHeuristic(Heuristic heuristic);
+	unsigned int m_turnNum;
 
 	glm::vec2 m_mousePosition;
 
@@ -90,6 +95,8 @@ private:
 	bool m_planetVisible = true;
 	bool m_minesVisible = true;
 	bool m_enemiesVisible = true;
+	bool m_labelsVisible = true;
+	bool m_tilesVisible = true;
 	
 	void m_resetAll();
 
