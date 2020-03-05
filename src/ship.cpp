@@ -20,7 +20,7 @@ Ship::Ship() :
 	setIsColliding(false);
 	setType(SHIP);
 	setState(IDLE);
-	setInitialPts(2.0f);
+	setInitialPts(3.0f);
 	newTurn();
 }
 

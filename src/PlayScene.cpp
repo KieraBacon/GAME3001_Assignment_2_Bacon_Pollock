@@ -690,6 +690,37 @@ void PlayScene::start()
 	addChild(m_pPtsLabel);
 }
 
+bool PlayScene::m_checkLineOfSight(Tile* startingTile, TileNeighbour direction)
+{
+	while (startingTile != nullptr)
+	{
+		if (startingTile->getGridPosition() == m_pShip->getTile()->getGridPosition())
+		{
+			return true;
+		}
+		else if (startingTile->getState() == IMPASSABLE)
+		{
+			return false;
+		}
+		switch (direction)
+		{
+		case UP:
+			startingTile = startingTile->getUp();
+			break;
+		case RIGHT:
+			startingTile = startingTile->getRight();
+			break;
+		case DOWN:
+			startingTile = startingTile->getDown();
+			break;
+		case LEFT:
+			startingTile = startingTile->getLeft();
+			break;
+		}
+	}
+	return false;
+}
+
 void PlayScene::endTurn()
 {
 	++m_turnNum;
@@ -713,11 +744,57 @@ void PlayScene::endTurn()
 	// Move the enemies
 	for (unsigned int i = 0; i < m_enemies.size(); i++)
 	{
-		m_enemies[i]->setTargetTile(m_pShip->getTile());
-		if (m_findShortestPath(m_enemies[i]))
+		if (m_enemies[i]->getState() == Enemy::EnemyState::IDLE)
 		{
-			m_enemies[i]->moveAlongPath();
-			m_enemies[i]->newTurn();
+			//check for line of sight?
+			if (m_enemies[i]->getTile()->getGridPosition().x == m_pShip->getTile()->getGridPosition().x)
+			{
+				if (m_enemies[i]->getTile()->getGridPosition().y > m_pShip->getTile()->getGridPosition().y)
+				{
+					if (m_checkLineOfSight(m_enemies[i]->getTile(), UP))
+					{
+						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
+						std::cout << "I see you little mousey! I'm going UP!" << std::endl;
+					}
+				}
+				else
+				{
+					if (m_checkLineOfSight(m_enemies[i]->getTile(), DOWN))
+					{
+						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
+						std::cout << "I see you little mousey! I'm going DOWN!" << std::endl;
+					}
+				}
+			}
+			else if (m_enemies[i]->getTile()->getGridPosition().y == m_pShip->getTile()->getGridPosition().y)
+			{
+				if (m_enemies[i]->getTile()->getGridPosition().x > m_pShip->getTile()->getGridPosition().x)
+				{
+					if (m_checkLineOfSight(m_enemies[i]->getTile(), LEFT))
+					{
+						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
+						std::cout << "I see you little mousey! I'm going LEFT!" << std::endl;
+					}
+				}
+				else
+				{
+					if (m_checkLineOfSight(m_enemies[i]->getTile(), RIGHT))
+					{
+						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
+						std::cout << "I see you little mousey! I'm going RIGHT!" << std::endl;
+					}
+				}
+			}
+		}
+		if (m_enemies[i]->getState() == Enemy::EnemyState::CHASING)
+		{
+			std::cout << "I am chasing you little mousey!" << std::endl;
+			m_enemies[i]->setTargetTile(m_pShip->getTile());
+			if (m_findShortestPath(m_enemies[i]))
+			{
+				m_enemies[i]->moveAlongPath();
+				m_enemies[i]->newTurn();
+			}
 		}
 	}
 
