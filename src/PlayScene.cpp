@@ -8,6 +8,7 @@
 #include "Util.h"
 #include "IMGUI_SDL/imgui_sdl.h"
 #include "TileComparators.h"
+#include <sstream>
 
 
 // Pathfinding & Steering functions ***********************************************
@@ -604,22 +605,17 @@ void PlayScene::m_updateUI()
 
 	if(ImGui::CollapsingHeader("Visibility Options"))
 	{
-		if(ImGui::Checkbox("Ship", &m_shipVisible))
-		{ }
+		if (ImGui::Checkbox("Debug", &m_displayUI)) {}
 		ImGui::SameLine();
-
-		if (ImGui::Checkbox("Planet", &m_planetVisible))
-		{
-		}
+		if (ImGui::Checkbox("Tiles", &m_tilesVisible)) {}
 		ImGui::SameLine();
-
-		if (ImGui::Checkbox("Mines", &m_minesVisible))
-		{
-		}
-
-		if (ImGui::Checkbox("Enemies", &m_enemiesVisible))
-		{
-		}
+		if(ImGui::Checkbox("Ship", &m_shipVisible)) {}
+		ImGui::SameLine();
+		if (ImGui::Checkbox("Planet", &m_planetVisible)) {}
+		ImGui::SameLine();
+		if (ImGui::Checkbox("Mines", &m_minesVisible)) {}
+		ImGui::SameLine();
+		if (ImGui::Checkbox("Enemies", &m_enemiesVisible)) {}
 	}
 	
 
@@ -635,6 +631,8 @@ void PlayScene::m_resetAll()
 
 void PlayScene::start()
 {
+	Game::Instance()->setScore(0.0f);
+
 	// setup default heuristic options
 	m_heuristic = MANHATTAN;
 	m_manhattanButtonColour = ImVec4(0.26f, 1.0f, 0.98f, 0.40f);
@@ -658,12 +656,43 @@ void PlayScene::start()
 
 	m_buildEnemies();
 	m_spawnEnemies();
+
+	// set up the labels
+	const SDL_Color black = { 0, 0, 0, 255 };
+	m_pTurnLabel = new Label("Turn: " + m_turnNum, "Consolas", 24, black, glm::vec2(10.0f, 25.0f), TTF_STYLE_NORMAL, false);
+	m_pTurnLabel->setParent(this);
+	addChild(m_pTurnLabel);
+
+	m_pScoreLabel = new Label("Score: " + std::to_string(Game::Instance()->getScore()), "Consolas", 24, black, glm::vec2(10.0f, 45.0f), TTF_STYLE_NORMAL, false);
+	m_pScoreLabel->setParent(this);
+	addChild(m_pScoreLabel);
+
+	m_pPtsLabel = new Label("Action Pts: " + std::to_string(m_pShip->getCurrentPts()), "Consolas", 24, black, glm::vec2(10.0f, 65.0f), TTF_STYLE_NORMAL, false);
+	m_pPtsLabel->setParent(this);
+	addChild(m_pPtsLabel);
 }
 
 void PlayScene::endTurn()
 {
+	++m_turnNum;
+
+	// Move the player
 	m_pShip->moveAlongPath();
 	m_pShip->newTurn();
+
+	// Update the score and labels
+	Game::Instance()->setScore(Game::Instance()->getScore() + m_pShip->getTile()->getTileCost());
+	m_pTurnLabel->setText("Turn: " + std::to_string(getTurnNum()));
+	
+	std::ostringstream scoreString;
+	scoreString << "Score: " << std::fixed << std::setprecision(0) << Game::Instance()->getScore();
+	m_pScoreLabel->setText(scoreString.str());
+	
+	std::ostringstream ptsString;
+	ptsString << "Action Pts: " << std::fixed << std::setprecision(0) << m_pShip->getCurrentPts();
+	m_pPtsLabel->setText(ptsString.str());
+
+	// Move the enemies
 	for (unsigned int i = 0; i < m_enemies.size(); i++)
 	{
 		m_enemies[i]->setTargetTile(m_pShip->getTile());
@@ -673,7 +702,22 @@ void PlayScene::endTurn()
 			m_enemies[i]->newTurn();
 		}
 	}
+
+	// Clear the enemies' paths from the screen
 	m_resetGrid();
+
+	// Check for victory or loss
+	if (m_pShip->getTile()->getGridPosition() == m_pPlanet->getTile()->getGridPosition())
+	{
+		std::cout << "You've reached the planet! Victory!" << std::endl;
+		Game::Instance()->changeSceneState(SceneState::END_SCENE);
+	}
+
+}
+
+const unsigned int PlayScene::getTurnNum()
+{
+	return m_turnNum;
 }
 
 PlayScene::PlayScene()
@@ -692,6 +736,11 @@ void PlayScene::draw()
 		{
 			tile->drawFrame();
 		}
+	}
+
+	if (m_tilesVisible)
+	{
+		// Draw the tiles
 	}
 
 	if(m_planetVisible)
@@ -719,7 +768,12 @@ void PlayScene::draw()
 	{
 		m_pShip->draw();
 	}
-	
+
+	if (m_labelsVisible)
+	{
+		m_pPtsLabel->draw();
+		m_pScoreLabel->draw();
+	}
 
 	// ImGui Rendering section - DO NOT MOVE OR DELETE
 	if (m_displayUI)

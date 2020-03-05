@@ -160,6 +160,16 @@ void Game::changeSceneState(const SceneState new_state)
 	
 }
 
+void Game::setScore(float score)
+{
+	m_score = score;
+}
+
+float Game::getScore()
+{
+	return m_score;
+}
+
 void Game::quit()
 {
 	m_bRunning = false;

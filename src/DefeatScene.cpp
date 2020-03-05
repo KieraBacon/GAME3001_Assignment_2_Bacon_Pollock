@@ -1,32 +1,33 @@
-#include "EndScene.h"
+#include "DefeatScene.h"
 #include <algorithm>
 #include "Game.h"
 #include "glm/gtx/string_cast.hpp"
 #include <iomanip>
 #include <sstream>
 
-EndScene::EndScene()
+DefeatScene::DefeatScene()
 {
-	EndScene::start();
+	DefeatScene::start();
 }
 
-EndScene::~EndScene()
+DefeatScene::~DefeatScene()
 = default;
 
-void EndScene::draw()
+void DefeatScene::draw()
 {
 	m_pHeaderLabel->draw();
 	m_pInstructionsLabel->draw();
 	m_pScoreLabel->draw();
+
 }
 
-void EndScene::update()
+void DefeatScene::update()
 {
 }
 
-void EndScene::clean()
+void DefeatScene::clean()
 {
-	std::cout << "Clean called on EndScene" << std::endl;
+	std::cout << "Clean called on DefeatScene" << std::endl;
 
 	delete m_pHeaderLabel;
 	m_pHeaderLabel = nullptr;
@@ -39,7 +40,7 @@ void EndScene::clean()
 	removeAllChildren();
 }
 
-void EndScene::handleEvents()
+void DefeatScene::handleEvents()
 {
 	SDL_Event event;
 	if (SDL_PollEvent(&event))
@@ -69,10 +70,10 @@ void EndScene::handleEvents()
 	}
 }
 
-void EndScene::start()
+void DefeatScene::start()
 {
 	const SDL_Color blue = { 0, 0, 255, 255 };
-	m_pHeaderLabel = new Label("GOAL REACHED", "lazy", 80, blue, glm::vec2(400.0f, 40.0f));
+	m_pHeaderLabel = new Label("DEFEATED", "lazy", 80, blue, glm::vec2(400.0f, 40.0f));
 	m_pHeaderLabel->setParent(this);
 	addChild(m_pHeaderLabel);
 
