@@ -7,10 +7,10 @@
 Enemy::Enemy() :
 	m_currentDirection(0.0f)
 {
-	TheTextureManager::Instance()->load("../Assets/textures/ship3.png",
-		"ship", TheGame::Instance()->getRenderer());
+	TheTextureManager::Instance()->load("../Assets/textures/kitten2x.png",
+		"kitten", TheGame::Instance()->getRenderer());
 
-	auto size = TheTextureManager::Instance()->getTextureSize("ship");
+	auto size = TheTextureManager::Instance()->getTextureSize("kitten");
 	setWidth(size.x);
 	setHeight(size.y);
 	setPosition(glm::vec2(400.0f, 300.0f));
@@ -32,7 +32,7 @@ void Enemy::draw()
 	const int xComponent = getPosition().x;
 	const int yComponent = getPosition().y;
 
-	TheTextureManager::Instance()->draw("ship", xComponent, yComponent,
+	TheTextureManager::Instance()->draw("kitten", xComponent, yComponent,
 		TheGame::Instance()->getRenderer(), m_currentDirection, 255, true);
 }
 
