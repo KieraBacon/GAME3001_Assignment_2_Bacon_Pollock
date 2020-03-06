@@ -820,54 +820,10 @@ void PlayScene::endTurn()
 	{
 		if (m_enemies[i]->getState() == Enemy::EnemyState::IDLE)
 		{
-<<<<<<< HEAD
 			if (m_lookInCardinalDirections(m_enemies[i]) == true)
 			{
 				m_enemies[i]->setState(Enemy::EnemyState::CHASING);
-=======
-			//check for line of sight?
-			if (m_enemies[i]->getTile()->getGridPosition().x == m_pShip->getTile()->getGridPosition().x)
-			{
-				if (m_enemies[i]->getTile()->getGridPosition().y > m_pShip->getTile()->getGridPosition().y)
-				{
-					if (m_checkLineOfSight(m_enemies[i]->getTile(), UP))
-					{
-						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
-						TheSoundManager::Instance()->playSound("Meow", 0);
-						std::cout << "I see you little mousey! I'm going UP!" << std::endl;
-					}
-				}
-				else
-				{
-					if (m_checkLineOfSight(m_enemies[i]->getTile(), DOWN))
-					{
-						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
-						TheSoundManager::Instance()->playSound("Meow", 0);
-						std::cout << "I see you little mousey! I'm going DOWN!" << std::endl;
-					}
-				}
-			}
-			else if (m_enemies[i]->getTile()->getGridPosition().y == m_pShip->getTile()->getGridPosition().y)
-			{
-				if (m_enemies[i]->getTile()->getGridPosition().x > m_pShip->getTile()->getGridPosition().x)
-				{
-					if (m_checkLineOfSight(m_enemies[i]->getTile(), LEFT))
-					{
-						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
-						TheSoundManager::Instance()->playSound("Meow", 0);
-						std::cout << "I see you little mousey! I'm going LEFT!" << std::endl;
-					}
-				}
-				else
-				{
-					if (m_checkLineOfSight(m_enemies[i]->getTile(), RIGHT))
-					{
-						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
-						TheSoundManager::Instance()->playSound("Meow", 0);
-						std::cout << "I see you little mousey! I'm going RIGHT!" << std::endl;
-					}
-				}
->>>>>>> master
+				TheSoundManager::Instance()->playSound("Meow", 0);
 			}
 		}
 		if (m_enemies[i]->getState() == Enemy::EnemyState::CHASING)
@@ -903,7 +859,6 @@ void PlayScene::endTurn()
 			}
 		}
 	}
-
 }
 
 const unsigned int PlayScene::getTurnNum()
