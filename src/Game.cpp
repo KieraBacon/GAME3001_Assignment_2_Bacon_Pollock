@@ -20,7 +20,7 @@ Game::Game() :
 	bool musicPlaying = false;
 	if (musicPlaying == false)
 	{
-		TheSoundManager::Instance()->playMusic("RatSong", 1);
+		TheSoundManager::Instance()->playMusic("RatSong", -1);
 		musicPlaying = true;
 
 	}
