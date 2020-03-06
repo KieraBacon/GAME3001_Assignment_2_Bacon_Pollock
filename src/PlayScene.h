@@ -59,6 +59,7 @@ private:
 	bool m_checkLineOfSight(Tile* startingTile, TileNeighbour direction);
 
 	void m_resetGrid();
+	void m_findObjects();
 	void m_buildGrid();
 	void m_randomizeTileCosts();
 	void m_mapTiles();

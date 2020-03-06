@@ -54,8 +54,6 @@ void PlayScene::m_spawnMines()
 	{
 		m_resetGrid();
 		m_resetImpassableTiles();
-		m_pShip->getTile()->setTileState(START);
-		m_pPlanet->getTile()->setTileState(GOAL);
 		for (int i = 0; i < m_mineNum; ++i)
 		{
 			m_spawnObject(m_mines[i]);
@@ -164,6 +162,16 @@ void PlayScene::m_resetGrid()
 			tile->resetTile();
 		}
 		m_closedList.pop_back();
+	}
+}
+
+void PlayScene::m_findObjects()
+{
+	m_pShip->getTile()->setTileState(START);
+	m_pPlanet->getTile()->setTileState(GOAL);
+	for (Enemy* enemy : m_enemies)
+	{
+		enemy->getTile()->setTileState(START);
 	}
 }
 
