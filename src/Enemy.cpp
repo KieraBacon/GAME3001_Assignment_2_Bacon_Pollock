@@ -18,11 +18,11 @@ Enemy::Enemy() :
 	setAcceleration(glm::vec2(0.0f, 0.0f));
 	setIsColliding(false);
 	setType(SHIP);
-	setState(IDLE);
-	setInitialPts(1.0f);
+	setState(Enemy::EnemyState::IDLE);
+	setInitialPts(6.5f);
+	m_state = Enemy::EnemyState::IDLE;
 	newTurn();
 }
-
 
 Enemy::~Enemy()
 = default;

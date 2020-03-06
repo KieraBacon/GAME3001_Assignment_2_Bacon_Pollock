@@ -56,6 +56,7 @@ private:
 	void m_buildEnemies();
 	void m_spawnEnemies();
 	void m_eraseEnemies();
+	bool m_checkLineOfSight(Tile* startingTile, TileNeighbour direction);
 
 	void m_resetGrid();
 	void m_buildGrid();

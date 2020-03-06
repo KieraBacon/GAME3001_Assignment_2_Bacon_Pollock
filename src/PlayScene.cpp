@@ -8,6 +8,7 @@
 #include "Util.h"
 #include "IMGUI_SDL/imgui_sdl.h"
 #include "TileComparators.h"
+#include "SoundManager.h"
 #include <sstream>
 
 
@@ -650,6 +651,8 @@ void PlayScene::m_resetAll()
 void PlayScene::start()
 {
 	Game::Instance()->setScore(0.0f);
+	TheSoundManager::Instance()->load("../Assets/audio/turnSound.wav", "TurnSound", sound_type::SOUND_SFX);
+	TheSoundManager::Instance()->load("../Assets/audio/catMeow.wav", "Meow", sound_type::SOUND_SFX);
 
 	// setup default heuristic options
 	m_heuristic = MANHATTAN;
@@ -690,10 +693,49 @@ void PlayScene::start()
 	addChild(m_pPtsLabel);
 }
 
+bool PlayScene::m_checkLineOfSight(Tile* startingTile, TileNeighbour direction)
+{
+	while (startingTile != nullptr)
+	{
+		std::cout << "TILE FOR LINE OF SIGHT IS: X:::" << startingTile->getGridPosition().x << " Y:::" << startingTile->getGridPosition().y << " AND IS " << startingTile->getTileState() <<  std::endl;
+		if (startingTile->getTileState() == IMPASSABLE)
+		{
+			return false;
+		}
+			else if(startingTile->getGridPosition() == m_pShip->getTile()->getGridPosition())
+		{
+			return true;
+		}
+		
+		switch (direction)
+		{
+		case UP:
+			startingTile = startingTile->getUp();
+			std::cout << "UP " << std::endl;
+			break;
+		case RIGHT:
+			startingTile = startingTile->getRight();
+			std::cout << "RIGHT " << std::endl;
+
+			break;
+		case DOWN:
+			startingTile = startingTile->getDown();
+			std::cout << "DOWN " << std::endl;
+
+			break;
+		case LEFT:
+			startingTile = startingTile->getLeft();
+			std::cout << "LEFT " << std::endl;
+			break;
+		}
+	}
+	return false;
+}
+
 void PlayScene::endTurn()
 {
 	++m_turnNum;
-
+	TheSoundManager::Instance()->playSound("TurnSound", 0);
 	// Move the player
 	m_pShip->moveAlongPath();
 	m_pShip->newTurn();
@@ -713,11 +755,61 @@ void PlayScene::endTurn()
 	// Move the enemies
 	for (unsigned int i = 0; i < m_enemies.size(); i++)
 	{
-		m_enemies[i]->setTargetTile(m_pShip->getTile());
-		if (m_findShortestPath(m_enemies[i]))
+		if (m_enemies[i]->getState() == Enemy::EnemyState::IDLE)
 		{
-			m_enemies[i]->moveAlongPath();
-			m_enemies[i]->newTurn();
+			//check for line of sight?
+			if (m_enemies[i]->getTile()->getGridPosition().x == m_pShip->getTile()->getGridPosition().x)
+			{
+				if (m_enemies[i]->getTile()->getGridPosition().y > m_pShip->getTile()->getGridPosition().y)
+				{
+					if (m_checkLineOfSight(m_enemies[i]->getTile(), UP))
+					{
+						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
+						TheSoundManager::Instance()->playSound("Meow", 0);
+						std::cout << "I see you little mousey! I'm going UP!" << std::endl;
+					}
+				}
+				else
+				{
+					if (m_checkLineOfSight(m_enemies[i]->getTile(), DOWN))
+					{
+						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
+						TheSoundManager::Instance()->playSound("Meow", 0);
+						std::cout << "I see you little mousey! I'm going DOWN!" << std::endl;
+					}
+				}
+			}
+			else if (m_enemies[i]->getTile()->getGridPosition().y == m_pShip->getTile()->getGridPosition().y)
+			{
+				if (m_enemies[i]->getTile()->getGridPosition().x > m_pShip->getTile()->getGridPosition().x)
+				{
+					if (m_checkLineOfSight(m_enemies[i]->getTile(), LEFT))
+					{
+						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
+						TheSoundManager::Instance()->playSound("Meow", 0);
+						std::cout << "I see you little mousey! I'm going LEFT!" << std::endl;
+					}
+				}
+				else
+				{
+					if (m_checkLineOfSight(m_enemies[i]->getTile(), RIGHT))
+					{
+						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
+						TheSoundManager::Instance()->playSound("Meow", 0);
+						std::cout << "I see you little mousey! I'm going RIGHT!" << std::endl;
+					}
+				}
+			}
+		}
+		if (m_enemies[i]->getState() == Enemy::EnemyState::CHASING)
+		{
+			std::cout << "I am chasing you little mousey!" << std::endl;
+			m_enemies[i]->setTargetTile(m_pShip->getTile());
+			if (m_findShortestPath(m_enemies[i]))
+			{
+				m_enemies[i]->moveAlongPath();
+				m_enemies[i]->newTurn();
+			}
 		}
 	}
 
