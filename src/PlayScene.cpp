@@ -55,8 +55,7 @@ void PlayScene::m_spawnMines()
 	{
 		m_resetGrid();
 		m_resetImpassableTiles();
-		m_pShip->getTile()->setTileState(START);
-		m_pPlanet->getTile()->setTileState(GOAL);
+		m_markEnemyTiles();
 		for (int i = 0; i < m_mineNum; ++i)
 		{
 			m_spawnObject(m_mines[i]);
@@ -150,6 +149,58 @@ void PlayScene::m_eraseEnemies()
 	m_enemies.shrink_to_fit();
 }
 
+void PlayScene::m_markEnemyTiles()
+{
+	for (Enemy* enemy : m_enemies)
+	{
+		enemy->getTile()->setTileState(START);
+	}
+}
+
+bool PlayScene::m_lookInCardinalDirections(Enemy* enemy)
+{
+	// Check for line of sight
+	if (enemy->getTile()->getGridPosition().x == m_pShip->getTile()->getGridPosition().x)
+	{
+		if (enemy->getTile()->getGridPosition().y > m_pShip->getTile()->getGridPosition().y)
+		{
+			if (m_checkLineOfSight(enemy->getTile(), UP))
+			{
+				std::cout << "I see you little mousey! I'm going UP!" << std::endl;
+				return true;
+			}
+		}
+		else
+		{
+			if (m_checkLineOfSight(enemy->getTile(), DOWN))
+			{
+				std::cout << "I see you little mousey! I'm going DOWN!" << std::endl;
+				return true;
+			}
+		}
+	}
+	else if (enemy->getTile()->getGridPosition().y == m_pShip->getTile()->getGridPosition().y)
+	{
+		if (enemy->getTile()->getGridPosition().x > m_pShip->getTile()->getGridPosition().x)
+		{
+			if (m_checkLineOfSight(enemy->getTile(), LEFT))
+			{
+				std::cout << "I see you little mousey! I'm going LEFT!" << std::endl;
+				return true;
+			}
+		}
+		else
+		{
+			if (m_checkLineOfSight(enemy->getTile(), RIGHT))
+			{
+				std::cout << "I see you little mousey! I'm going RIGHT!" << std::endl;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 void PlayScene::m_resetGrid()
 {
 	for (auto tile : m_openList)
@@ -165,6 +216,16 @@ void PlayScene::m_resetGrid()
 			tile->resetTile();
 		}
 		m_closedList.pop_back();
+	}
+}
+
+void PlayScene::m_findObjects()
+{
+	m_pShip->getTile()->setTileState(START);
+	m_pPlanet->getTile()->setTileState(GOAL);
+	for (Enemy* enemy : m_enemies)
+	{
+		enemy->getTile()->setTileState(START);
 	}
 }
 
@@ -266,6 +327,7 @@ void PlayScene::m_spawnShip()
 {
 	m_spawnObject(m_pShip);
 	m_resetGrid();
+	m_markEnemyTiles();
 	m_pShip->clearPath();
 	m_pShip->getTile()->setTileState(START);
 }
@@ -274,6 +336,7 @@ void PlayScene::m_spawnPlanet()
 {
 	m_spawnObject(m_pPlanet);
 	m_resetGrid();
+	m_markEnemyTiles();
 	m_pShip->clearPath();
 	m_pPlanet->getTile()->setTileState(GOAL);
 	m_pShip->setTargetTile(m_pPlanet->getTile());
@@ -757,48 +820,10 @@ void PlayScene::endTurn()
 	{
 		if (m_enemies[i]->getState() == Enemy::EnemyState::IDLE)
 		{
-			//check for line of sight?
-			if (m_enemies[i]->getTile()->getGridPosition().x == m_pShip->getTile()->getGridPosition().x)
+			if (m_lookInCardinalDirections(m_enemies[i]) == true)
 			{
-				if (m_enemies[i]->getTile()->getGridPosition().y > m_pShip->getTile()->getGridPosition().y)
-				{
-					if (m_checkLineOfSight(m_enemies[i]->getTile(), UP))
-					{
-						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
-						TheSoundManager::Instance()->playSound("Meow", 0);
-						std::cout << "I see you little mousey! I'm going UP!" << std::endl;
-					}
-				}
-				else
-				{
-					if (m_checkLineOfSight(m_enemies[i]->getTile(), DOWN))
-					{
-						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
-						TheSoundManager::Instance()->playSound("Meow", 0);
-						std::cout << "I see you little mousey! I'm going DOWN!" << std::endl;
-					}
-				}
-			}
-			else if (m_enemies[i]->getTile()->getGridPosition().y == m_pShip->getTile()->getGridPosition().y)
-			{
-				if (m_enemies[i]->getTile()->getGridPosition().x > m_pShip->getTile()->getGridPosition().x)
-				{
-					if (m_checkLineOfSight(m_enemies[i]->getTile(), LEFT))
-					{
-						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
-						TheSoundManager::Instance()->playSound("Meow", 0);
-						std::cout << "I see you little mousey! I'm going LEFT!" << std::endl;
-					}
-				}
-				else
-				{
-					if (m_checkLineOfSight(m_enemies[i]->getTile(), RIGHT))
-					{
-						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
-						TheSoundManager::Instance()->playSound("Meow", 0);
-						std::cout << "I see you little mousey! I'm going RIGHT!" << std::endl;
-					}
-				}
+				m_enemies[i]->setState(Enemy::EnemyState::CHASING);
+				TheSoundManager::Instance()->playSound("Meow", 0);
 			}
 		}
 		if (m_enemies[i]->getState() == Enemy::EnemyState::CHASING)
@@ -815,6 +840,7 @@ void PlayScene::endTurn()
 
 	// Clear the enemies' paths from the screen
 	m_resetGrid();
+	m_markEnemyTiles();
 
 	// Check for victory or loss
 	if (m_pShip->getTile()->getGridPosition() == m_pPlanet->getTile()->getGridPosition())
@@ -833,7 +859,6 @@ void PlayScene::endTurn()
 			}
 		}
 	}
-
 }
 
 const unsigned int PlayScene::getTurnNum()

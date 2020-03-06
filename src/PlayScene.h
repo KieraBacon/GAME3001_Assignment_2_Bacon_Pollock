@@ -56,9 +56,12 @@ private:
 	void m_buildEnemies();
 	void m_spawnEnemies();
 	void m_eraseEnemies();
+	void m_markEnemyTiles();
+	bool m_lookInCardinalDirections(Enemy* enemy);
 	bool m_checkLineOfSight(Tile* startingTile, TileNeighbour direction);
 
 	void m_resetGrid();
+	void m_findObjects();
 	void m_buildGrid();
 	void m_randomizeTileCosts();
 	void m_mapTiles();
