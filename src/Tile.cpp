@@ -10,8 +10,17 @@ Tile::Tile(glm::vec2 world_position, glm::vec2 grid_position) :
 {
 	TheTextureManager::Instance()->load("../Assets/textures/tile.png",
 		"tile", TheGame::Instance()->getRenderer());
+	TheTextureManager::Instance()->load("../Assets/textures/tallGrass.png",
+		"tallGrass", TheGame::Instance()->getRenderer());
+	TheTextureManager::Instance()->load("../Assets/textures/shortGrass.png",
+		"shortGrass", TheGame::Instance()->getRenderer());
+	TheTextureManager::Instance()->load("../Assets/textures/mediumGrass.png",
+		"mediumGrass", TheGame::Instance()->getRenderer());
+	TheTextureManager::Instance()->load("../Assets/textures/sand.png",
+		"sand", TheGame::Instance()->getRenderer());
 
 	auto size = TheTextureManager::Instance()->getTextureSize("tile");
+	//auto size = TheTextureManager::Instance()->getTextureSize("grass");
 	setWidth(size.x);
 	setHeight(size.y);
 	setPosition(world_position);
@@ -53,6 +62,11 @@ void Tile::draw()
 	TheTextureManager::Instance()->draw("tile", xComponent, yComponent,
 		TheGame::Instance()->getRenderer(), 0, 255, true);
 
+
+	TheTextureManager::Instance()->draw("tallGrass", xComponent, yComponent,
+		TheGame::Instance()->getRenderer(), 0, 255, true);
+
+
 	m_pClosedOpenLabel->draw();
 	m_pValueLabel->draw();
 	m_pHeuristicLabel->draw();
@@ -70,6 +84,15 @@ void Tile::clean()
 
 void Tile::drawFrame()
 {			    
+
+	const int xComponent = getPosition().x;
+	const int yComponent = getPosition().y;
+
+	TheTextureManager::Instance()->draw("shortGrass", xComponent, yComponent,
+		TheGame::Instance()->getRenderer(), 0, 255, true);
+
+
+
 	const int x = getPosition().x - Config::TILE_SIZE * 0.5;
 	const int y = getPosition().y - Config::TILE_SIZE * 0.5;
 	const int w = Config::TILE_SIZE;
@@ -81,12 +104,31 @@ void Tile::drawFrame()
 	float tileCost = getTileCost();
 	tileCost = tileCost == 0 ? 1.0f : tileCost;
 
+
+	if (tileCost == 2)
+	{
+		TheTextureManager::Instance()->draw("mediumGrass", xComponent, yComponent,
+			TheGame::Instance()->getRenderer(), 0, 255, true);
+	}
+
+	else if (tileCost == 3)
+	{
+		TheTextureManager::Instance()->draw("tallGrass", xComponent, yComponent,
+			TheGame::Instance()->getRenderer(), 0, 255, true);
+	}
+
+	else if (tileCost == 4)
+	{
+		TheTextureManager::Instance()->draw("sand", xComponent, yComponent,
+			TheGame::Instance()->getRenderer(), 0, 255, true);
+	}
+
 	const int gB = tileCost * 64 > 255 ? 255 : tileCost * 64;
 	const int rB = (4 / tileCost) * 64 > 255 ? 255 : (4 / tileCost) * 64;
 	const int rW = totalCost * 10 > 255 ? 255 : totalCost * 10;
 	const int gW = (2.5 / totalCost) * 10 > 255 ? 255 : (25 / totalCost) * 10;
 	SDL_SetRenderDrawBlendMode(TheGame::Instance()->getRenderer(), SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(TheGame::Instance()->getRenderer(), rB, gB, 0, 55);
+	SDL_SetRenderDrawColor(TheGame::Instance()->getRenderer(), rB, gB, 0, 1);
 	SDL_RenderFillRect(TheGame::Instance()->getRenderer(), &rect);
 	SDL_SetRenderDrawColor(TheGame::Instance()->getRenderer(), rW, gW, 0, 255);
 	SDL_RenderDrawRect(TheGame::Instance()->getRenderer(), &rect);
