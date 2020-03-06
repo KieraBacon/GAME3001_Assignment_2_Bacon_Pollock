@@ -8,6 +8,7 @@
 #include "Util.h"
 #include "IMGUI_SDL/imgui_sdl.h"
 #include "TileComparators.h"
+#include "SoundManager.h"
 #include <sstream>
 
 
@@ -650,6 +651,8 @@ void PlayScene::m_resetAll()
 void PlayScene::start()
 {
 	Game::Instance()->setScore(0.0f);
+	TheSoundManager::Instance()->load("../Assets/audio/turnSound.wav", "TurnSound", sound_type::SOUND_SFX);
+	TheSoundManager::Instance()->load("../Assets/audio/catMeow.wav", "Meow", sound_type::SOUND_SFX);
 
 	// setup default heuristic options
 	m_heuristic = MANHATTAN;
@@ -732,7 +735,7 @@ bool PlayScene::m_checkLineOfSight(Tile* startingTile, TileNeighbour direction)
 void PlayScene::endTurn()
 {
 	++m_turnNum;
-
+	TheSoundManager::Instance()->playSound("TurnSound", 0);
 	// Move the player
 	m_pShip->moveAlongPath();
 	m_pShip->newTurn();
@@ -762,6 +765,7 @@ void PlayScene::endTurn()
 					if (m_checkLineOfSight(m_enemies[i]->getTile(), UP))
 					{
 						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
+						TheSoundManager::Instance()->playSound("Meow", 0);
 						std::cout << "I see you little mousey! I'm going UP!" << std::endl;
 					}
 				}
@@ -770,6 +774,7 @@ void PlayScene::endTurn()
 					if (m_checkLineOfSight(m_enemies[i]->getTile(), DOWN))
 					{
 						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
+						TheSoundManager::Instance()->playSound("Meow", 0);
 						std::cout << "I see you little mousey! I'm going DOWN!" << std::endl;
 					}
 				}
@@ -781,6 +786,7 @@ void PlayScene::endTurn()
 					if (m_checkLineOfSight(m_enemies[i]->getTile(), LEFT))
 					{
 						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
+						TheSoundManager::Instance()->playSound("Meow", 0);
 						std::cout << "I see you little mousey! I'm going LEFT!" << std::endl;
 					}
 				}
@@ -789,6 +795,7 @@ void PlayScene::endTurn()
 					if (m_checkLineOfSight(m_enemies[i]->getTile(), RIGHT))
 					{
 						m_enemies[i]->setState(Enemy::EnemyState::CHASING);
+						TheSoundManager::Instance()->playSound("Meow", 0);
 						std::cout << "I see you little mousey! I'm going RIGHT!" << std::endl;
 					}
 				}

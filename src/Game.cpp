@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "SoundManager.h"
 #include <algorithm>
 #include <ctime>
 #include <iomanip>
@@ -14,6 +15,15 @@ Game::Game() :
 	m_pWindow(nullptr), m_pRenderer(nullptr), m_currentFrame(0), m_bRunning(true), m_frames(0), m_currentScene(nullptr), m_currentSceneState(NO_SCENE)
 {
 	srand(unsigned(time(nullptr)));  // random seed
+	TheSoundManager::Instance()->load("../Assets/audio/RatBurglarSong.wav", "RatSong", sound_type::SOUND_MUSIC);
+
+	bool musicPlaying = false;
+	if (musicPlaying == false)
+	{
+		TheSoundManager::Instance()->playMusic("RatSong", 1);
+		musicPlaying = true;
+
+	}
 }
 
 Game::~Game()
@@ -51,7 +61,7 @@ bool Game::init(const char* title, const int x, const int y, const int width, co
 			if (m_pRenderer != nullptr) // render init success
 			{
 				std::cout << "renderer creation success" << std::endl;
-				SDL_SetRenderDrawColor(m_pRenderer.get(), 255, 255, 255, 255);
+				SDL_SetRenderDrawColor(m_pRenderer.get(), 255, 255, 200, 255);
 			}
 			else
 			{
