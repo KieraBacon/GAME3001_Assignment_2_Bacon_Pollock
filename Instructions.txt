@@ -1,0 +1,38 @@
+GAME3001 Assignment 2: Pathfinding Simulator
+By Kiera Bacon and Sam Pollock
+Using template V6 by Tom Tsiliopoulos
+
+In this application, the user must guide a rat to the cheese while avoiding 'playful' kittens.
+
+Before the rat can move, it must find a route to the cheese. This is done by pressing the 'find route' button, or by pressing f.
+Once the rat has a route, it can begin to move. This is done by the user by pressing the 'end turn' button, or by pressing space.
+The rat will follow the first successful path it finds.
+
+However, not all tiles on the rat's path are equally easy to move to. Each tile requires a set number of points to move onto, and the rat will gain a set number of points at the end of each turn. Occasionally this may make it appear as though the rat has not moved, or as if the turn has not ended, but the user can see the number of points remaining in the top left of the screen, under the Dear ImGUI display. In addition, in certain circumstances - when there are multiple kittens chasing the rat - the end of turn process may take some time to calculate before the user will see any feedback.
+
+Initially, the kittens will remain stationary at all times. However, if a kitten sees the rat directly in any cardinal direction, the kitten will begin to chase the rat, and will use the same pathfinding as the rat to do so. Please note that this may be time consuming to calculate. The kittens are significantly faster than the rat is. The chase is on!
+
+If the rat reaches the cheese, the game will end with the player's victory.
+If any kitten reaches the rat first, however, it will end with defeat.
+
+The user can, at any time, re-randomize any of the board conditions using the following buttons/keys:
+	The location of the rat:	"Rewspawn Rat"		'r'
+	The location of the cheese:	"Rewspawn Cheese"	'c'
+	The locations of the pylons:	"Rewspawn Pylons"	'p'
+	The locations of the kittens:	"Rewspawn Kittens"	'k'
+	The costs/types of the tiles:	"Randomize Tiles"	't'
+	The number of pylons:		"Number of Pylons"
+	The number of kittens:		"Number of Kittens"
+Note that doing so in any case will erase the rat's path, and the user will need to manually re-find it. Once a kitten knows there's a rat to play with, though, nothing as insignificant as the world re-organizing itself will stop it from having its fun! (Unless it's the kittens themselves that are re-organized. That can be disorienting.) Please also note that re-randomizing the pylons or changing the number of them there are can also sometimes take a long time to process, and in some cases the program may automatically reduce the number of pylons in order to ensure that there is always a path to the cheese.
+
+Additionally, the user can turn off the display of all objects using the following buttons:
+Under "Visibility Options":
+	The tiles' graphics		"Tiles"			'T'
+	The tiles' highlights/outlines	"Tile Frames"		'F'
+	The tiles' pathfinding info	"Tile Info"		'I'
+	The rat				"Rat"			'R'
+	The cheese			"Cheese"		'C'
+	The pylons			"Pylons"		'P'
+	The kittens			"Kittens"		'K'
+	The Dear ImGui display					'`'
+Please note that switching off visibility of these things does not affect the game's behaviour.

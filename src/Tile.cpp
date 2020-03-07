@@ -6,7 +6,7 @@
 
 
 Tile::Tile(glm::vec2 world_position, glm::vec2 grid_position) :
-	m_gridPosition(grid_position), m_pParentNode(nullptr)
+	m_gridPosition(grid_position), m_pParentNode(nullptr), m_tilePathColour(Tile::Path::NONE)
 {
 	TheTextureManager::Instance()->load("../Assets/textures/tile.png",
 		"tile", TheGame::Instance()->getRenderer());
@@ -18,6 +18,10 @@ Tile::Tile(glm::vec2 world_position, glm::vec2 grid_position) :
 		"mediumGrass", TheGame::Instance()->getRenderer());
 	TheTextureManager::Instance()->load("../Assets/textures/sand.png",
 		"sand", TheGame::Instance()->getRenderer());
+	TheTextureManager::Instance()->load("../Assets/textures/PathfindingDot_Green.png",
+		"PathfindingDot_Green", TheGame::Instance()->getRenderer());
+	TheTextureManager::Instance()->load("../Assets/textures/PathfindingDot_Red.png",
+		"PathfindingDot_Red", TheGame::Instance()->getRenderer());
 
 	auto size = TheTextureManager::Instance()->getTextureSize("tile");
 	//auto size = TheTextureManager::Instance()->getTextureSize("grass");
@@ -58,19 +62,29 @@ void Tile::draw()
 {
 	const int xComponent = getPosition().x;
 	const int yComponent = getPosition().y;
+	float tileCost = getTileCost();
+	tileCost = tileCost == 0 ? 1.0f : tileCost;
 
-	TheTextureManager::Instance()->draw("tile", xComponent, yComponent,
-		TheGame::Instance()->getRenderer(), 0, 255, true);
-
-
-	TheTextureManager::Instance()->draw("tallGrass", xComponent, yComponent,
-		TheGame::Instance()->getRenderer(), 0, 255, true);
-
-
-	m_pClosedOpenLabel->draw();
-	m_pValueLabel->draw();
-	m_pHeuristicLabel->draw();
-	m_pCostLabel->draw();
+	if (tileCost <= 1.0f)
+	{
+		TheTextureManager::Instance()->draw("shortGrass", xComponent, yComponent,
+			TheGame::Instance()->getRenderer(), 0, 255, true);
+	}
+	else if (tileCost <= 2.0f)
+	{
+		TheTextureManager::Instance()->draw("mediumGrass", xComponent, yComponent,
+			TheGame::Instance()->getRenderer(), 0, 255, true);
+	}
+	else if (tileCost <= 3.0f)
+	{
+		TheTextureManager::Instance()->draw("tallGrass", xComponent, yComponent,
+			TheGame::Instance()->getRenderer(), 0, 255, true);
+	}
+	else
+	{
+		TheTextureManager::Instance()->draw("sand", xComponent, yComponent,
+			TheGame::Instance()->getRenderer(), 0, 255, true);
+	}
 }
 
 void Tile::update()
@@ -82,17 +96,8 @@ void Tile::clean()
 	
 }
 
-void Tile::drawFrame()
+void Tile::drawFrame(int alpha)
 {			    
-
-	const int xComponent = getPosition().x;
-	const int yComponent = getPosition().y;
-
-	TheTextureManager::Instance()->draw("shortGrass", xComponent, yComponent,
-		TheGame::Instance()->getRenderer(), 0, 255, true);
-
-
-
 	const int x = getPosition().x - Config::TILE_SIZE * 0.5;
 	const int y = getPosition().y - Config::TILE_SIZE * 0.5;
 	const int w = Config::TILE_SIZE;
@@ -104,39 +109,46 @@ void Tile::drawFrame()
 	float tileCost = getTileCost();
 	tileCost = tileCost == 0 ? 1.0f : tileCost;
 
-
-	if (tileCost == 2)
+	int gB = (4 / tileCost) * 64 > 255 ? 255 : (4 / tileCost) * 64;
+	int rB = tileCost * 64 > 255 ? 255 : tileCost * 64;
+	int rW = totalCost * 10 > 255 ? 255 : totalCost * 10;
+	int gW = (2.5 / totalCost) * 10 > 255 ? 255 : (25 / totalCost) * 10;
+	if (getTileState() == IMPASSABLE)
 	{
-		TheTextureManager::Instance()->draw("mediumGrass", xComponent, yComponent,
-			TheGame::Instance()->getRenderer(), 0, 255, true);
+		rW = 255;
+		gW = 0;
 	}
-
-	else if (tileCost == 3)
-	{
-		TheTextureManager::Instance()->draw("tallGrass", xComponent, yComponent,
-			TheGame::Instance()->getRenderer(), 0, 255, true);
-	}
-
-	else if (tileCost == 4)
-	{
-		TheTextureManager::Instance()->draw("sand", xComponent, yComponent,
-			TheGame::Instance()->getRenderer(), 0, 255, true);
-	}
-
-	const int gB = tileCost * 64 > 255 ? 255 : tileCost * 64;
-	const int rB = (4 / tileCost) * 64 > 255 ? 255 : (4 / tileCost) * 64;
-	const int rW = totalCost * 10 > 255 ? 255 : totalCost * 10;
-	const int gW = (2.5 / totalCost) * 10 > 255 ? 255 : (25 / totalCost) * 10;
+	
 	SDL_SetRenderDrawBlendMode(TheGame::Instance()->getRenderer(), SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(TheGame::Instance()->getRenderer(), rB, gB, 0, 1);
+	SDL_SetRenderDrawColor(TheGame::Instance()->getRenderer(), rB, gB, 0, alpha);
 	SDL_RenderFillRect(TheGame::Instance()->getRenderer(), &rect);
 	SDL_SetRenderDrawColor(TheGame::Instance()->getRenderer(), rW, gW, 0, 255);
 	SDL_RenderDrawRect(TheGame::Instance()->getRenderer(), &rect);
+}
 
+void Tile::drawLabels()
+{
 	m_pClosedOpenLabel->draw();
 	m_pValueLabel->draw();
 	m_pHeuristicLabel->draw();
 	m_pCostLabel->draw();
+}
+
+void Tile::drawDots(int alpha)
+{
+	const int xComponent = getPosition().x;
+	const int yComponent = getPosition().y;
+
+	if (m_tilePathColour == Tile::Path::GREEN)
+	{
+		TheTextureManager::Instance()->draw("PathfindingDot_Green", xComponent, yComponent,
+			TheGame::Instance()->getRenderer(), 0, alpha, true);
+	}
+	else if (m_tilePathColour == Tile::Path::RED)
+	{
+		TheTextureManager::Instance()->draw("PathfindingDot_Red", xComponent, yComponent,
+			TheGame::Instance()->getRenderer(), 0, alpha, true);
+	}
 }
 
 Tile * Tile::getUp()
@@ -357,6 +369,14 @@ void Tile::setParentNode(Tile* parent)
 Tile* Tile::getParentNode() const
 {
 	return m_pParentNode;
+}
+
+void Tile::setTilePathColour(Tile::Path colour)
+{
+	if (!(m_tilePathColour == Tile::Path::GREEN && colour == Tile::Path::RED))
+	{
+		m_tilePathColour = colour;
+	}
 }
 
 void Tile::resetTile()

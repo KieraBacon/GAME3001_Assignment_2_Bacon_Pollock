@@ -17,6 +17,8 @@
 class Tile final : public DisplayObject
 {
 public:
+	enum class Path { NONE, GREEN, RED };
+public:
 	Tile(glm::vec2 world_position = glm::vec2(), glm::vec2 grid_position = glm::vec2());
 	~Tile();
 
@@ -24,7 +26,9 @@ public:
 	virtual void draw() override;
 	virtual void update() override;
 	virtual void clean() override;
-	void drawFrame();
+	void drawFrame(int alpha = 0);
+	void drawLabels();
+	void drawDots(int alpha = 127);
 
 	// get neighbours
 	Tile* getUp();
@@ -60,6 +64,8 @@ public:
 
 	void setParentNode(Tile* parent);
 	Tile* getParentNode() const;
+
+	void setTilePathColour(Tile::Path colour);
 	
 	void resetTile();
 	
@@ -74,6 +80,7 @@ private:
 	float m_totalCost = 0.0f;
 	float m_targetDist = 0.0f;
 	float m_tileValue = 0.0f;
+	Tile::Path m_tilePathColour;
 	TileState m_tileState;
 	glm::vec2 m_gridPosition;
 

@@ -29,6 +29,8 @@ public:
 
 	void endTurn();
 	const unsigned int getTurnNum();
+	const int getTileFrameBGAlpha();
+	const int getPathingDotAlpha();
 
 private:
 	// GameObjects
@@ -102,6 +104,11 @@ private:
 	bool m_enemiesVisible = true;
 	bool m_labelsVisible = true;
 	bool m_tilesVisible = true;
+	bool m_tileFramesVisible = true;
+	int m_tileFrameBGAlpha = 0;
+	bool m_tileInfoVisible = true;
+	bool m_pathingDotsVisible = true;
+	int m_pathingDotAlpha = 127;
 	
 	void m_resetAll();
 

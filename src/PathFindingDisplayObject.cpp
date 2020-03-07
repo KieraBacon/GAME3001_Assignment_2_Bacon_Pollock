@@ -39,6 +39,7 @@ void PathFindingDisplayObject::moveAlongPath()
 			setTile(m_path.back());
 			setPosition(getTile()->getPosition());
 			getTile()->setTileState(START);
+			getTile()->setTilePathColour(Tile::Path::NONE);
 			m_path.pop_back();
 		}
 	}
@@ -56,6 +57,10 @@ std::vector<Tile*>& PathFindingDisplayObject::getPath()
 
 void PathFindingDisplayObject::clearPath()
 {
+	for (Tile* tile : m_path)
+	{
+		tile->setTilePathColour(Tile::Path::NONE);
+	}
 	m_path.clear();
 	m_path.shrink_to_fit();
 }

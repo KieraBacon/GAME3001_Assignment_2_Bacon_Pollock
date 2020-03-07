@@ -56,14 +56,16 @@ void PlayScene::m_spawnMines()
 		m_resetGrid();
 		m_resetImpassableTiles();
 		m_markEnemyTiles();
+		if (m_mineNum <= 0)
+		{
+			std::cout << "An error occured in the spawning of pylons." << std::endl;
+			navigable = true;
+		}
 		for (int i = 0; i < m_mineNum; ++i)
 		{
 			m_spawnObject(m_mines[i]);
 			m_mines[i]->getTile()->setTileState(IMPASSABLE);
 		}
-
-		// first pass
-		//m_minePassAdjustment();
 
 		if (m_findShortestPath(m_pShip))
 		{
@@ -399,9 +401,24 @@ bool PlayScene::m_findShortestPath(PathFindingDisplayObject* actor)
 			pathCost = currentNode->getTotalCost();
 			std::cout << pathCost <<std::endl;
 			Tile* nodeToAdd = currentNode;
+
+			// Determine which type of actor it is for the adding of path dots
+			Tile::Path dotColour = Tile::Path::NONE;
+			Enemy* enemyActor = dynamic_cast<Enemy*>(actor);
+			Ship* shipActor = dynamic_cast<Ship*>(actor);
+			if (enemyActor != nullptr)
+			{
+				dotColour = Tile::Path::RED;
+			}
+			if (shipActor != nullptr)
+			{
+				dotColour = Tile::Path::GREEN;
+			}
+
 			while (nodeToAdd != actor->getTile())
 			{
 				actor->addPathNodeToBack(nodeToAdd);
+				nodeToAdd->setTilePathColour(dotColour);
 				nodeToAdd = nodeToAdd->getParentNode();
 			}
 			return true;
@@ -603,103 +620,114 @@ void PlayScene::m_updateUI()
 		ImGui::Text("Authors:");
 		ImGui::Text("Tom Tsiliopoulos ");
 		ImGui::Text("Kiera Josie Bacon ");
+		ImGui::Text("Sam Pollock ");
 		ImGui::End();
 	}
 
 	/*************************************************************************************************/
-	if (ImGui::Button("Respawn Rat [s]"))
-	{
-		m_spawnShip();
-	}
 
-	ImGui::SameLine();
-
-	if (ImGui::Button("Respawn Cheese [p]"))
-	{
-		m_spawnPlanet();
-	}
-
-	ImGui::SameLine();
-
-	if (ImGui::Button("Respawn Pylons [m]"))
-	{
-		m_spawnMines();
-	}
-
-	ImGui::SameLine();
-
-	if (ImGui::Button("Respawn Enemies [e]"))
-	{
-		m_spawnEnemies();
-	}
-
-	if (ImGui::Button("Randomize Tile Costs [r]"))
-	{
-		m_randomizeTileCosts();
-	}
-
-	ImGui::SameLine();
-
-	if (ImGui::Button("Find Shortest Path [f]"))
+	if (ImGui::Button("Find Path [f]"))
 	{
 		m_findShortestPath(m_pShip);
 	}
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("End Turn (Move Along Path) [space]"))
+	if (ImGui::Button("End Turn [space]"))
 	{
 		endTurn();
 	}
 
-	if(ImGui::CollapsingHeader("Heuristic Options"))
+	if (ImGui::CollapsingHeader("Board Options"))
 	{
-		ImGui::PushStyleColor(ImGuiCol_Button, m_manhattanButtonColour);
-		if (ImGui::Button("Manhattan Distance"))
+		if (ImGui::Button("Respawn Rat [r]"))
 		{
-			m_selectHeuristic(MANHATTAN);
+			m_spawnShip();
 		}
-		ImGui::PopStyleColor();
 
 		ImGui::SameLine();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, m_euclideanButtonColour);
-		if (ImGui::Button("Euclidean Distance"))
+		if (ImGui::Button("Respawn Cheese [c]"))
 		{
-			m_selectHeuristic(EUCLIDEAN);
+			m_spawnPlanet();
 		}
-		ImGui::PopStyleColor();
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Respawn Pylons [p]"))
+		{
+			m_spawnMines();
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Respawn Kittens [k]"))
+		{
+			m_spawnEnemies();
+		}
+
+		if (ImGui::Button("Randomize Tiles [t]"))
+		{
+			m_randomizeTileCosts();
+		}
+
+		if (ImGui::SliderInt("Pylons", &m_mineNum, 1, 150))
+		{
+			m_eraseMines();
+			m_buildMines();
+			m_spawnMines();
+		}
+
+		if (ImGui::SliderInt("Kittens", &m_enemyNum, 1, 150))
+		{
+			m_eraseEnemies();
+			m_buildEnemies();
+			m_spawnEnemies();
+		}
 	}
 
-	if(ImGui::SliderInt("Number of Mines", &m_mineNum, 1, 150))
+	if (ImGui::CollapsingHeader("Debug Options"))
 	{
-		m_eraseMines();
-		m_buildMines();
-		m_spawnMines();
-	}
+		if (ImGui::CollapsingHeader("Heuristic Options"))
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, m_manhattanButtonColour);
+			if (ImGui::Button("Manhattan Distance"))
+			{
+				m_selectHeuristic(MANHATTAN);
+			}
+			ImGui::PopStyleColor();
 
-	if (ImGui::SliderInt("Number of Enemies", &m_enemyNum, 1, 150))
-	{
-		m_eraseEnemies();
-		m_buildEnemies();
-		m_spawnEnemies();
-	}
+			ImGui::SameLine();
 
-	if(ImGui::CollapsingHeader("Visibility Options"))
-	{
-		if (ImGui::Checkbox("Debug", &m_displayUI)) {}
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Tiles", &m_tilesVisible)) {}
-		ImGui::SameLine();
-		if(ImGui::Checkbox("Ship", &m_shipVisible)) {}
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Planet", &m_planetVisible)) {}
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Mines", &m_minesVisible)) {}
-		ImGui::SameLine();
-		if (ImGui::Checkbox("Enemies", &m_enemiesVisible)) {}
+			ImGui::PushStyleColor(ImGuiCol_Button, m_euclideanButtonColour);
+			if (ImGui::Button("Euclidean Distance"))
+			{
+				m_selectHeuristic(EUCLIDEAN);
+			}
+			ImGui::PopStyleColor();
+		}
+
+		if (ImGui::CollapsingHeader("Visibility Options"))
+		{
+			if (ImGui::Checkbox("Rat [0]", &m_shipVisible)) {}
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Cheese [9]", &m_planetVisible)) {}
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Pylons [8]", &m_minesVisible)) {}
+			if (ImGui::Checkbox("Kittens [7]", &m_enemiesVisible)) {}
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Labels [6]", &m_labelsVisible)) {}
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Pathing Dots [5]", &m_pathingDotsVisible)) {}
+			if (ImGui::SliderInt("Pathing Dot Alpha", &m_pathingDotAlpha, 0, 255)) {}
+			if (ImGui::Checkbox("Tiles [4]", &m_tilesVisible)) {}
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Tile Frames [=]", &m_tileFramesVisible)) {}
+			ImGui::SameLine();
+			if (ImGui::Checkbox("Tile Info [-]", &m_tileInfoVisible)) {}
+			if (ImGui::SliderInt("Tile Frame Fill", &m_tileFrameBGAlpha, 0, 255)) {}
+		}
 	}
-	
 
 	// Main Window End
 	ImGui::End();
@@ -866,6 +894,16 @@ const unsigned int PlayScene::getTurnNum()
 	return m_turnNum;
 }
 
+const int PlayScene::getTileFrameBGAlpha()
+{
+	return m_tileFrameBGAlpha;
+}
+
+const int PlayScene::getPathingDotAlpha()
+{
+	return m_pathingDotAlpha;
+}
+
 PlayScene::PlayScene()
 {
 	PlayScene::start();
@@ -876,17 +914,24 @@ PlayScene::~PlayScene()
 
 void PlayScene::draw()
 {
-	if (m_displayUI)
+	for (auto tile : m_pGrid)
 	{
-		for (auto tile : m_pGrid)
+		if (m_tilesVisible)
 		{
-			tile->drawFrame();
+			tile->draw();
 		}
-	}
-
-	if (m_tilesVisible)
-	{
-		// Draw the tiles
+		if (m_tileFramesVisible)
+		{
+			tile->drawFrame(m_tileFrameBGAlpha);
+		}
+		if (m_tileInfoVisible)
+		{
+			tile->drawLabels();
+		}
+		if (m_pathingDotsVisible)
+		{
+			tile->drawDots(m_pathingDotAlpha);
+		}
 	}
 
 	if(m_planetVisible)
@@ -1018,39 +1063,52 @@ void PlayScene::handleEvents()
 			case SDLK_f:
 				m_findShortestPath(m_pShip);
 				break;
-			case SDLK_e:
+			case SDLK_k:
 				m_spawnEnemies();
 				break;
-			case SDLK_m:
+			case SDLK_p:
 				m_spawnMines();
 				break;
-			case SDLK_p:
+			case SDLK_c:
 				m_spawnPlanet();
 				break;
-			case SDLK_r:
+			case SDLK_t:
 				m_randomizeTileCosts();
-				//m_resetAll();
 				break;
-			case SDLK_s:
+			case SDLK_r:
 				m_spawnShip();
 				break;
 			case SDLK_SPACE:
 				endTurn();
 				break;
-
-				/************************************************************************/
-			case SDLK_w:
-				
+			case SDLK_0:
+				m_shipVisible = (m_shipVisible) ? false : true;
 				break;
-			
-			case SDLK_a:
-				
+			case SDLK_9:
+				m_planetVisible = (m_planetVisible) ? false : true;
 				break;
-			case SDLK_d:
-				
+			case SDLK_8:
+				m_minesVisible = (m_minesVisible) ? false : true;
+				break;
+			case SDLK_7:
+				m_enemiesVisible = (m_enemiesVisible) ? false : true;
+				break;
+			case SDLK_6:
+				m_labelsVisible = (m_labelsVisible) ? false : true;
+				break;
+			case SDLK_5:
+				m_pathingDotsVisible = (m_pathingDotsVisible) ? false : true;
+				break;
+			case SDLK_4:
+				m_tilesVisible = (m_tilesVisible) ? false : true;
+				break;
+			case SDLK_EQUALS:
+				m_tileFramesVisible = (m_tileFramesVisible) ? false : true;
+				break;
+			case SDLK_MINUS:
+				m_tileInfoVisible = (m_tileInfoVisible) ? false : true;
 				break;
 			default:
-				
 				break;
 			}
 			{

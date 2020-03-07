@@ -72,18 +72,20 @@ void DefeatScene::handleEvents()
 
 void DefeatScene::start()
 {
+	SDL_SetRenderDrawColor(Game::Instance()->getRenderer(), 255, 255, 200, 255);
+
 	const SDL_Color blue = { 0, 0, 255, 255 };
-	m_pHeaderLabel = new Label("DEFEATED", "lazy", 80, blue, glm::vec2(400.0f, 40.0f));
+	m_pHeaderLabel = new Label("DEFEATED", "BASKVILL", 80, blue, glm::vec2(400.0f, 40.0f));
 	m_pHeaderLabel->setParent(this);
 	addChild(m_pHeaderLabel);
 
-	m_pInstructionsLabel = new Label("Press 1 to Play Again", "lazy", 40, blue, glm::vec2(400.0f, 120.0f));
+	m_pInstructionsLabel = new Label("Press 1 to Play Again", "BASKVILL", 40, blue, glm::vec2(400.0f, 120.0f));
 	m_pInstructionsLabel->setParent(this);
 	addChild(m_pInstructionsLabel);
 
 	std::ostringstream scoreString;
 	scoreString << "Score: " << std::fixed << std::setprecision(0) << Game::Instance()->getScore();
-	m_pScoreLabel = new Label(scoreString.str(), "lazy", 40, blue, glm::vec2(400.0f, 80.0f));
+	m_pScoreLabel = new Label(scoreString.str(), "BASKVILL", 40, blue, glm::vec2(400.0f, 80.0f));
 	m_pScoreLabel->setParent(this);
 	addChild(m_pScoreLabel);
 }
